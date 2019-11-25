@@ -1,6 +1,6 @@
 import React from 'react';
 import uniqueId from "lodash.uniqueid";
-import { Todo } from "./todo-service";
+import { Todo, TodoService } from "./todo-service";
 import Enzyme, { mount } from "enzyme";
 import Adapter from 'enzyme-adapter-react-16';
 
@@ -23,5 +23,40 @@ describe("Display Todo", () => {
     };
     const wrapper = mount(<TodoComponent todo={todo} />);
     expect(hasText(todo.text, wrapper)).toBe(true);
+  });
+  it("should display checkbox with completion status", () => {
+    const todo: Todo = {
+      id: uniqueId(),
+      text: "first",
+      checked: false
+    };
+    const wrapper = mount(<TodoComponent todo={todo} />);
+    expect(contains(Checkbox, wrapper)).toBe(true);
+  });
+  it("should have a checbox checked if todo completion is true", () => {
+    const todo: Todo = {
+      id: uniqueId(),
+      text: "first",
+      checked: true
+    };
+    const wrapper = mount(<TodoComponent todo={todo} />);
+    expect(isChecked(TodoComponent, wrapper)).toBe(true);
+  });
+  it("should have a checkbox unchecked if todo completion is false", () => {
+    const todo: Todo = {
+      id: uniqueId(),
+      text: "first",
+      checked: false
+    };
+    const wrapper = mount(<TodoComponent todo={todo} />);
+    expect(isChecked(TodoComponent, wrapper)).toBe(false);
+  });
+  it("should display a list of todos", () => {
+    const todos: Todo[] = TodoService.addTodo(
+      "three",
+      TodoService.addTodo("two", TodoService.addTodo("one", []))
+    );
+    const wrapper = mount(<TodoList todos={todos} />);
+    expect(howMany(TodoComponent, wrapper)).toBe(3);
   });
 });
