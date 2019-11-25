@@ -15,27 +15,16 @@ describe('Todo Service', () => {
     });
   });
 
-  const toggleCompleteTodo = (todo: Todo) => {
-    const copy = JSON.parse(JSON.stringify(todo)) as Todo;
-    copy.checked = !copy.checked;
-    return copy;
-  };
-
   describe('Toggle Complete Todo', () => {
     it('should toggle complete for a todo', () => {
       const todo: Todo = { id: uniqueId(), text: '1', checked: false };
-      expect(toggleCompleteTodo(todo).checked).toBe(true);
-      expect(toggleCompleteTodo(toggleCompleteTodo(todo)).checked).toBe(false);
+      expect(TodoService.toggleCompleteTodo(todo).checked).toBe(true);
+      expect(
+        TodoService.toggleCompleteTodo(TodoService.toggleCompleteTodo(todo))
+          .checked
+      ).toBe(false);
     });
   });
-
-  const update = (todo: Todo, todos: Todo[]) => {
-    const copyTodo = JSON.parse(JSON.stringify(todo)) as Todo;
-    return todos.map(td => {
-      if (td.id === copyTodo.id) return copyTodo;
-      return td;
-    });
-  };
 
   describe("Update Todo", () => {
     it("should update todo", () => {
@@ -43,8 +32,8 @@ describe('Todo Service', () => {
         "TWO-TODO",
         TodoService.addTodo("todo-two", TodoService.addTodo("todo-one", []))
       );
-      const todo = toggleCompleteTodo(todos[0]);
-      const result = update(todo, todos);
+      const todo = TodoService.toggleCompleteTodo(todos[0]);
+      const result = TodoService.update(todo, todos);
       expect(result.map(td => td.checked)).toEqual([true, false, false]);
     });
   });
